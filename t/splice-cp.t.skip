@@ -1,0 +1,10 @@
+use strict;
+use warnings;
+
+use Test::More tests => 1;
+
+#open my $fh_in, "<", "README" or die("Could not open README: $!");
+#open my $fh_out, ">", "README.write" or die("Could not open README.write: $!");
+
+#splice_cp($fh_in, $fh_out);
+

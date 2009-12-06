@@ -1,0 +1,120 @@
+.TH tee 2 2006-04-28 "Linux 2.6.17" "Linux Programmer's Manual"
+.SH NAME
+tee \- duplicating pipe content.
+.SH SYNOPSIS
+.B #include <sys/splice.h>
+
+.B long tee(int fd_in, int fd_out, size_t bytes, unsigned int flags);
+
+.SH DESCRIPTION
+.BR tee ()
+duplicates at most
+.I bytes
+of content from pipe
+.I fd_in
+to pipe
+.IR fd_out .
+.I flags
+is a series of modifier flags, which share the name space with
+.BR splice (2)
+and
+.BR vmsplice (2):
+
+.TP 1.9i
+.B SPLICE_F_MOVE
+See
+.BR splice (2)
+.TP
+.B SPLICE_F_NONBLOCK
+Do not block on io.
+.TP
+.B SPLICE_F_MORE
+More data will be coming in a subsequent splice.
+.TP
+.B SPLICE_F_GIFT
+See
+.BR vmsplice (2)
+
+.PP
+Conceptually,
+.BR tee ()
+copies the data between the two pipes, in reality no real data copying
+takes place though. Under the covers,
+.BR tee ()
+assigns data in the output by merely grabbing a reference to the input.
+
+.SH RETURN VALUE
+Upon successful completion,
+.BR tee ()
+shall return the number of bytes that was duplicated between the input
+and output. Otherwise, it shall return a value of -1 and
+.I errno
+shall be set to indicate an error.
+
+.SH ERRORS
+.TP 1.1i
+.B EINVAL
+.I fd_in
+and
+.I fd_out
+do not both refer to a pipe.
+.TP
+.B ENOMEM
+Ran out of memory.
+
+.SH EXAMPLE
+The following example implements a basic
+.BR tee (1)
+program using the
+.BR tee (2)
+system call. To keep it simple, it has no real error handling.
+
+.nf
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/splice.h>
+
+int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
+do {
+	/*
+	 * tee stdin to stdout.
+	 */
+	int len = tee(STDIN_FILENO, STDOUT_FILENO, INT_MAX, SPLICE_F_NONBLOCK);
+
+	if (len < 0) {
+		if (errno == EAGAIN)
+			continue;
+		perror("tee");
+		break;
+	} else if (!len)
+		break;
+
+	/*
+	 * Consume stdin by splicing it to a file.
+	 */
+	while (len) {
+		int slen = splice(STDIN_FILENO, NULL, fd, NULL, len, SPLICE_F_MOVE);
+		if (slen < 0) {
+			perror("splice");
+			break;
+		}
+		len -= slen;
+	}
+} while (1);
+
+close(fd);
+.fi
+
+.SH HISTORY
+The
+.BR tee (2)
+system call first appeared in Linux-2.6.17.
+
+.SH SEE ALSO
+.BR splice (2),
+.BR vmsplice (2)
+
+.SH AUTHORS
+Jens Axboe <axboe@kernel.dk>

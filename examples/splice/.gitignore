@@ -1,0 +1,15 @@
+.depend
+*.o
+ktee
+ktee-net
+splice-cp
+splice-in
+splice-fromnet
+splice-tonet
+splice-out
+splice-test4c
+splice-test4s
+vmsplice
+vmsplice2
+vmsplice-to-user
+splice-bench

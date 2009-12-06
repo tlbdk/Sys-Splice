@@ -1,0 +1,81 @@
+.TH splice 2 2006-04-28 "Linux 2.6.17" "Linux Programmer's Manual"
+.SH NAME
+splice \- splice data to/from a pipe.
+.SH SYNOPSIS
+.B #include <sys/splice.h>
+
+.B long splice(int fd_in, loff_t *off_in, int fd_out, loff_t *off_out, size_t bytes, unsigned int flags);
+
+.SH DESCRIPTION
+The act of splicing can be seen as a way to connect two ends of a rope
+through a kernel buffer, where that buffer is implemented as a pipe. It
+provides a means to move data around without copying it to/from kernel/user
+address space, basically a random kernel buffer that the user has full
+control over.
+
+The
+.BR splice ()
+function splices
+.I bytes
+of  data between file descriptor
+.I fd_in
+and
+.IR fd_out ,
+where one of the descriptors must refer to a pipe. The
+.I flags
+argument is a series of modifier flags:
+
+.TP 1.9i
+.B SPLICE_F_MOVE
+Attempt to move pages instead of copying. This is only a hint to the kernel,
+pages may still be copied if we fail in stealing it out of the pipe or if
+the pipe buffers don't refer to full pages.
+.TP
+.B SPLICE_F_NONBLOCK
+Do not block on io.
+.TP
+.B SPLICE_F_MORE
+More data will be coming in a subsequent splice. This is a helpful hint when
+the output descriptor refers to a socket, see also
+.B MSG_MORE
+(see
+.BR send (2)
+and
+.B TCP_CORK
+.BR tcp (7))
+.TP
+.B SPLICE_F_GIFT
+See
+.BR vmsplice (2).
+
+.SH RETURN VALUE
+Upon successful completion,
+.BR splice ()
+shall return the number of bytes
+spliced to or from the pipe. Otherwise, it shall return a value of -1 and
+.I errno
+shall be set to indicate an error.
+
+.SH ERRORS
+.TP 1.1i
+.B EBADF
+File descriptors either not valid, or do not have proper rw permission.
+.TP
+.B EINVAL
+Target file system doesn't support splicing, none of the descriptors refer
+to a pipe or offset given for non-seekable device.
+.TP
+.B ENOMEM
+Ran out of memory.
+
+.SH HISTORY
+The
+.BR splice (2)
+system call first appeared in Linux-2.6.17.
+
+.SH SEE ALSO
+.BR splice (2),
+.BR tee (2)
+
+.SH AUTHORS
+Jens Axboe <axboe@kernel.dk>

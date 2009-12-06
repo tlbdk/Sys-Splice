@@ -1,0 +1,5 @@
+Version 1.01 ()
+ * Don't import everything from POSIX, only what is used.
+
+Version 1.00 (Wed Jan 1 2007)
+ * First version released

@@ -1,0 +1,63 @@
+use strict;
+use warnings;
+
+use Test::More tests => 1;
+
+# START
+
+#my $fh = IO::Socket::INET->new(
+#    LocalPort    => 10045,
+#    LocalAddr    => "127.0.0.1",
+#    Proto        => 'tcp',
+#    Blocking     => 1,
+#    ReuseAddr    => 1,
+#    Listen       => 1020, 
+#) or die "Could not open socket on (127.0.0.1:10045): $!\n";
+#
+#my $pid = fork;
+#if($pid == 0) {
+#    close $fh;
+#    my $fh = IO::Socket::INET->new(
+#        PeerAddr => '127.0.0.1',
+#        PeerPort => 10045,
+#        Proto    => 'tcp',
+#        Blocking => 1,
+#    ) or die "Could not connect to socket on 127.0.0.1:10045 : $!\n";
+#    
+#    my $buf = ("x" x (1024 * 1024)); # 1MB
+#    #my $buf;
+#    for(1..1000) {
+#        #my $rv = $fh->read($buf, $SYS_SPLICE_SIZE);
+#        #print "$buf\n";
+#        my $rv = $fh->send($buf);
+#        if(defined $rv and $rv > 0) {
+#            print "send $rv\n";
+#        } else {
+#            die "error in send: $!";
+#        }
+#        #print "$buf\n";
+#    }
+#
+#    exit;
+#}
+#
+#my $newfh = $fh->accept() or die  "Could not accept: $!";
+#
+#pipe my $pipe_out, my $pipe_in or die ("Could not make pipe: $!");
+#
+#my $ret = sys_splice(fileno($newfh), 0, fileno($pipe_in), 0, 
+#    $SYS_SPLICE_SIZE, 0);
+#
+#die "$!" if $ret < 0;
+#
+#
+#open my $fh_out, ">", "README.write" or die("Could not open README.write: $!");
+#
+#$ret = sys_splice(fileno($pipe_out), 0, fileno($fh_out), 0, 
+#    $SYS_SPLICE_SIZE, $SYS_SPLICE_F_MOVE);
+#die "$!" if $ret < 0;
+#
+#shutdown $newfh, 2;
+#close $newfh;
+#
+#waitpid($pid, 0);

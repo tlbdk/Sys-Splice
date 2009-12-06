@@ -1,0 +1,12 @@
+Good XS example:
+ * http://search.cpan.org/~beppu/Tie-Array-Pointer-0.000059/lib/Tie/Array/Pointer.pm
+
+IO::Vec:
+
+http://search.cpan.org/~leont/IO-Vec-0.03/
+
+My first XS module:
+
+Start with making the ppport.h file it helps with keeping everything up to portability standards.
+
+ perl -MDevel::PPPort -e 'Devel::PPPort::WriteFile();' 

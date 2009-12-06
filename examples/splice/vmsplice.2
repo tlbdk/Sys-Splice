@@ -1,0 +1,102 @@
+.TH vmsplice 2 2006-04-28 "Linux 2.6.17" "Linux Programmer's Manual"
+.SH NAME
+vmsplice \- splice user pages into a pipe
+.SH SYNOPSIS
+.B #include <sys/uio.h>
+
+.B long vmsplice(int fd, const struct iovec *iov, unsigned long nr_segs, unsigned ing flags);
+
+.SH DESCRIPTION
+The
+.BR vmsplice ()
+function maps
+.I nr_segs
+range(s) of
+.I iov
+described user memory into a pipe. The
+.I fd must refer to a pipe.
+
+The pointer
+.I iov
+points to an array of
+.I struct iovec
+entries as defined in
+.IR <sys/uio.h> :
+
+.nf
+  struct iovec {
+	void *iov_base;		/* Starting address */
+	size_t iov_len;		/* Number of bytes */
+  };
+.fi
+
+The
+.I flags
+argument is a series of modifier flags. Only
+.B SPLICE_F_NONBLOCK
+and
+.B SPLICE_F_GIFT
+really apply to
+.BR vmsplice ()
+, the but the scope is shared with
+.BR splice (2).
+
+.TP 1.9i
+.B SPLICE_F_MOVE
+See
+.BR splice (2).
+.TP
+.B SPLICE_F_NONBLOCK
+Do not block on io.
+.TP
+.B SPLICE_F_MORE
+More data will be coming in a subsequent splice.
+.TP
+.B SPLICE_F_GIFT
+The user pages are a gift to the kernel. The application may not reuse this
+memory ever, or page cache and on disk data may differ. Data must also be
+properly page aligned, both in memory and length.
+
+.SH RETURN VALUE
+Upon successful completion,
+.BR vmsplice ()
+shall return the number of bytes spliced to the pipe. Otherwise, it shall
+return a value of -1 and
+.I errno
+shall be set to indicate an error.
+
+.SH ERRORS
+.TP 1.1i
+.B EBADF
+.I fd
+either not valid, or doesn't refer to a pipe.
+.TP
+.B EINVAL
+.I nr_segs
+not valid, memory not aligned if
+.I SPLICE_F_GIFT
+set.
+.TP
+.B ENOMEM
+Ran out of memory.
+
+.SH NOTES
+.BR vmsplice ()
+follows the other vectorized read/write type functions when it comes to
+limitations on number of segments being passed in. This limit is
+.B IOV_MAX
+as defined in
+.IR <limits.h> .
+At the time of this writing, that limit is 1024.
+
+.SH HISTORY
+The
+.BR vmsplice (2)
+system call first appeared in Linux-2.6.17.
+
+.SH SEE ALSO
+.BR splice (2),
+.BR tee (2)
+
+.SH AUTHORS
+Jens Axboe <axboe@kernel.dk>
