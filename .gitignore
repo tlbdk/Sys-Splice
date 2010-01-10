@@ -5,3 +5,4 @@ Makefile.PL
 META.yml
 README
 *.tar.gz
+*.bak

@@ -5,10 +5,10 @@ use Module::Build;
 die 'OS unsupported! Patches welcome :)' unless $^O =~ /linux/i;
 
 my $builder = Module::Build->new(
-    module_name        => 'Sys::Prctl',
+    module_name        => 'Sys::Splice',
     license            => 'perl',
     dist_author        => 'Troels Liebe Bentsen <troels@infopro.dk>',
-    dist_version_from  => 'lib/Sys/Prctl.pm',
+    dist_version_from  => 'lib/Sys/Splice.pm',
     create_readme      => 1,
     create_makefile_pl => 'passthrough',
     requires => {
